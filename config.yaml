@@ -1,0 +1,35 @@
+base_folder: "J:\\projects"
+gitignore:
+  - '###> darkanakin41/project-generator'
+  - '.idea'
+  - '###< darkanakin41/project-generator'
+
+project_type:
+  default:
+    folder: 'default'
+    exec: 'code'
+  gfi:
+    folder: 'GFI'
+    exec: 'idea'
+    git:
+      user:
+        email: 'pierre.lejeune@gfi.fr'
+  php:
+    folder: 'web'
+    exec: 'idea'
+    templates:
+      symfony: "git@github.com:darkanakin41/symfony-template-bundle.git"
+      symfony-bundle: "git@github.com:darkanakin41/symfony-template-bundle.git"
+  python:
+    folder: 'python'
+    exec: 'idea'
+    gitignore_template: 'Python' # see https://github.com/github/gitignore
+    templates:
+      default: "python\\default"
+
+
+vcs:
+  github:
+    base_url: "https://github.com"
+    user: "darkanakin41"
+    token: " af800811252ca7f5267dfb01c760da6d7fab4bd8 "

@@ -1,1 +1,8 @@
 -e .
+
+click
+PyYAML
+
+PyGithub
+gitpython
+mutagen-helper
