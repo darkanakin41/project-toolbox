@@ -4,7 +4,7 @@ import sys
 import click
 
 from toolbox.__version__ import __version__
-from toolbox.command.CreateCommand import CreateCommand
+from toolbox.command.create_command import CreateCommand
 
 
 class SpecialHelpOrder(click.Group):

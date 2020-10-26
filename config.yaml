@@ -6,7 +6,7 @@ gitignore:
 
 project_type:
   default:
-    folder: 'default'
+    folder: 'idea'
     exec: 'code'
   gfi:
     folder: 'GFI'
@@ -17,9 +17,6 @@ project_type:
   php:
     folder: 'web'
     exec: 'idea'
-    templates:
-      symfony: "git@github.com:darkanakin41/symfony-template-bundle.git"
-      symfony-bundle: "git@github.com:darkanakin41/symfony-template-bundle.git"
   python:
     folder: 'python'
     exec: 'idea'
@@ -27,9 +24,9 @@ project_type:
     templates:
       default: "python\\default"
 
-
 vcs:
-  github:
+  github_perso:
+    type: "github"
     base_url: "https://github.com"
     user: "darkanakin41"
-    token: " af800811252ca7f5267dfb01c760da6d7fab4bd8 "
+    token: "af800811252ca7f5267dfb01c760da6d7fab4bd8"

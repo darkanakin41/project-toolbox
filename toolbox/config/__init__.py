@@ -10,3 +10,4 @@ config = {
 for parser_name in parsers.keys():
     parser: AbstractParser = parsers[parser_name]
     config[parser_name] = parser.parsed
+

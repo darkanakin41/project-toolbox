@@ -6,7 +6,13 @@ class ProjectType:
     Project Type Configuration
     """
 
-    def __init__(self, name: str, folder: str, exec: str = None, templates=[], git: dict = {}, gitignore: str = None):
+    def __init__(self,
+                 name: str,
+                 folder: str,
+                 exec: str = None,
+                 templates: dict = dict({}),
+                 git: dict = dict({}),
+                 gitignore: str = None):
         self.name = name
         self.folder = folder
         self.exec = exec

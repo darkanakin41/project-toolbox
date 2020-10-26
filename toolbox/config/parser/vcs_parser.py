@@ -18,19 +18,21 @@ class VcsParser(AbstractParser):
 
         vcss: dict = {}
 
-        for vcs in vcs_configs.keys():
-            vcs_config = vcs_configs[vcs]
+        for vcs_name in vcs_configs.keys():
+            vcs_config = vcs_configs[vcs_name]
             base_url = vcs_config.get('base_url')
+            type = vcs_config.get('type')
             user = vcs_config.get('user')
             password = vcs_config.get('password')
             token = vcs_config.get('token')
 
-            vcs = Vcs(vcs,
+            vcs = Vcs(vcs_name,
+                      type,
                       base_url,
                       user=user,
                       password=password,
                       token=token)
 
-            vcss[vcs] = vcs
+            vcss[vcs_name] = vcs
 
         self.parsed = vcss

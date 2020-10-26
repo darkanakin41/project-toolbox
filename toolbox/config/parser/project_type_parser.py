@@ -1,5 +1,6 @@
 from toolbox.config.parser.abstract_parser import AbstractParser
 from toolbox.model.config.project_type import ProjectType
+from toolbox.model.template import Template
 
 
 class ProjectTypeParser(AbstractParser):
@@ -23,15 +24,17 @@ class ProjectTypeParser(AbstractParser):
             folder = type_config.get('folder')
             exec = type_config.get('exec')
             git = type_config.get('git')
-            templates = type_config.get('templates')
+            templates_config = type_config.get('templates')
             gitignore = type_config.get('gitignore')  # see https://github.com/github/gitignore
 
-            project_type = ProjectType(type,
-                                       folder,
-                                       exec=exec,
-                                       git=git,
-                                       templates=templates,
-                                       gitignore=gitignore)
+            project_type = ProjectType(type, folder, exec=exec, git=git, gitignore=gitignore)
+
+            templates = {}
+            if templates_config is not None:
+                for template_name in templates_config.keys():
+                    templates[template_name] = Template(template_name, templates_config[template_name], project_type)
+
+            project_type.templates = templates
 
             project_types[type] = project_type
 
