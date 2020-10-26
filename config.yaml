@@ -30,3 +30,16 @@ vcs:
     base_url: "https://github.com"
     user: "darkanakin41"
     token: "af800811252ca7f5267dfb01c760da6d7fab4bd8"
+
+vm:
+  types:
+    workstation:
+      type: "vmware"
+      exe: "D:\VMware Workstation\vmrun.exe"
+  instances:
+    devbox:
+      path: "H:\Debian 10 Devbox\Clone of Debian 10.x 64-bit.vmx"
+      type: "workstation"
+      hostname: "192.168.154.128"
+      ssh_username: "devbox"
+      ssh_password: "devbox"

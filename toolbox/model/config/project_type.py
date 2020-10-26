@@ -56,5 +56,5 @@ class ProjectType:
         :param command: execute the given command in the project folder
         :return:
         """
-        logging.info("Execution of % command", command)
+        logging.info("Execution of %s command", command)
         os.system("{} {}".format(command, path))

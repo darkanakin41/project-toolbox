@@ -57,7 +57,7 @@ class Template:
         :return:
         """
         template_directory = self.template_path()
-        logging.debug("[Template.py] Copy files from `%` to `%`", template_directory, target_folder)
+        logging.debug("[Template.py] Copy files from %s to %s", template_directory, target_folder)
         copy_tree(template_directory, target_folder)
 
     def _copy_git(self, target_folder):

@@ -32,14 +32,14 @@ class CreateCommand:
         template = kwargs.get('template')
 
         if type_name not in config.get('project_type').keys():
-            logging.error('Unknown type, valid ones are : %', ', '.join(config.get('project_type').keys()))
+            logging.error('Unknown type, valid ones are %s', ', '.join(config.get('project_type').keys()))
             sys.exit(1)
         project_type = config.get('project_type').get(type_name)
 
         if vcs_type is None:
             vcs_config = None
         elif vcs_type not in config.get('vcs').keys():
-            logging.error('Unknown vcs, valid ones are : %', ', '.join(config.get('vcs').keys()))
+            logging.error('Unknown vcs, valid ones are %s', ', '.join(config.get('vcs').keys()))
             sys.exit(1)
         else:
             vcs_config = config.get('vcs').get(vcs_type)
@@ -90,7 +90,7 @@ class CreateCommand:
             logging.info('Project already exist, no need to create the folder')
         else:
             pathlib.Path(project.get_path()).mkdir(parents=True, exist_ok=True)
-            logging.info('Project folder created "%"', project.get_path())
+            logging.info('Project folder %s created', project.get_path())
 
     @staticmethod
     def _copy_template(project: Project, template_name: str):
@@ -99,7 +99,7 @@ class CreateCommand:
         :param project: the project
         """
         if project.type.templates.get(template_name) is None:
-            logging.error('Unknown template %, valid ones are : %',
+            logging.error('Unknown template %s, valid ones are %s',
                           template_name,
                           ', '.join(project.type.templates.keys()))
             sys.exit(1)
@@ -108,7 +108,7 @@ class CreateCommand:
 
         files = os.listdir(project.get_path())
         if len(files) > 0:
-            logging.warning("Unable to copy template % because project is already initialized", template.name)
+            logging.warning("Unable to copy template %s because project is already initialized", template.name)
             return
 
         template.copy(project.get_path())
@@ -137,7 +137,7 @@ class CreateCommand:
                 logging.info('Retrieving the origin remote')
             except NoSectionError:
                 origin = repo.create_remote('origin', repo_url)
-                logging.info('Adding the remote "origin" : %', repo_url)
+                logging.info('Adding the remote origin %s', repo_url)
 
         if len(repo.untracked_files) > 0:
             repo.git.add('.')
