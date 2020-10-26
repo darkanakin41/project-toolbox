@@ -22,7 +22,6 @@ class AbstractParser(ABC):
         Get the config key used
         :return: string
         """
-        pass
 
     @abstractmethod
     def parse(self, config: dict):
@@ -31,4 +30,3 @@ class AbstractParser(ABC):
         :param config: the configuration to parse
         :return:
         """
-        pass

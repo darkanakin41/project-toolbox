@@ -1,4 +1,3 @@
-import logging
 import os
 
 from toolbox.model.config.project_type import ProjectType
@@ -45,25 +44,3 @@ class Project:
         """
         with open(os.path.join(self.get_path(), filename), "w") as stream:
             stream.write(content)
-
-    def exec_commands(self):
-        """
-        Execute the commands
-        :return: void
-        """
-        commands = self.type.exec
-        if commands is not None and isinstance(commands, str):
-            self._exec_command(commands)
-        elif commands is not None and isinstance(commands, list):
-            for command in commands:
-                self._exec_command(command)
-
-    def _exec_command(self, command: str):
-        """
-        Execute the command
-        :param command: execute the given command in the project folder
-        :return:
-        """
-        project_dir = self.get_path()
-        logging.info("Execution of {}".format(command))
-        os.system("{} {}".format(command, project_dir))

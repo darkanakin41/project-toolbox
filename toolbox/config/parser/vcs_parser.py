@@ -7,9 +7,6 @@ class VcsParser(AbstractParser):
     Parse vcs configuration
     """
 
-    def __init__(self, config):
-        super().__init__(config)
-
     def get_config_key(self) -> str:
         return 'vcs'
 
@@ -21,13 +18,13 @@ class VcsParser(AbstractParser):
         for vcs_name in vcs_configs.keys():
             vcs_config = vcs_configs[vcs_name]
             base_url = vcs_config.get('base_url')
-            type = vcs_config.get('type')
+            vcs_type = vcs_config.get('type')
             user = vcs_config.get('user')
             password = vcs_config.get('password')
             token = vcs_config.get('token')
 
             vcs = Vcs(vcs_name,
-                      type,
+                      vcs_type,
                       base_url,
                       user=user,
                       password=password,

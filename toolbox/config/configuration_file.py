@@ -23,6 +23,10 @@ class ConfigurationFile:
 
     @staticmethod
     def base_folder():
+        """
+        Get the base folder of the application
+        :return:
+        """
         return os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
     @staticmethod

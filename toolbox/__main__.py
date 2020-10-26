@@ -5,20 +5,24 @@ import click
 
 from toolbox.__version__ import __version__
 from toolbox.command.create_command import CreateCommand
+from toolbox.command.start_command import StartCommand
 
 
 class SpecialHelpOrder(click.Group):
+    """
+    The special help order
+    """
     def __init__(self, *args, **kwargs):
         self.help_priorities = {}
-        super(SpecialHelpOrder, self).__init__(*args, **kwargs)
+        super().__init__(self, *args, **kwargs)
 
     def get_help(self, ctx):
         self.list_commands = self.list_commands_for_help
-        return super(SpecialHelpOrder, self).get_help(ctx)
+        return super().get_help(ctx)
 
     def list_commands_for_help(self, ctx):
         """reorder the list of commands when listing the help"""
-        commands = super(SpecialHelpOrder, self).list_commands(ctx)
+        commands = super().list_commands(ctx)
         return (c[1] for c in sorted(
             (self.help_priorities.get(command, 1), command)
             for command in commands))
@@ -30,8 +34,8 @@ class SpecialHelpOrder(click.Group):
         help_priority = kwargs.pop('help_priority', 1)
         help_priorities = self.help_priorities
 
-        def decorator(f):
-            cmd = super(SpecialHelpOrder, self).command(*args, **kwargs)(f)
+        def decorator(function):
+            cmd = super().command(self, *args, **kwargs)(function)
             help_priorities[cmd.name] = help_priority
             return cmd
 
@@ -45,7 +49,6 @@ class SpecialHelpOrder(click.Group):
 def main(verbose, silent):
     """
     Main command group
-    :return:
     """
     if not silent:
         root = logging.getLogger()
@@ -63,13 +66,45 @@ def main(verbose, silent):
 
 @main.command(help='Create a new project', help_priority=1)
 @click.argument('name', required=True)
-@click.argument('type', required=True)
+@click.argument('project_type', required=True)
 @click.option('--vcs', required=False)
 @click.option('--template', required=False)
-def create(name: str, type: str, vcs: str = None, template: str = None):
+def create(name: str, project_type: str, vcs: str = None, template: str = None):
+    """
+    Create command
+    :param name: The name of the project
+    :param type: The type of the project
+    :param vcs: The VCS to use
+    :param template: The template to clone
+    :return:
+    """
     command = CreateCommand()
-    command.exec(name=name, type=type, vcs=vcs, template=template)
+    command.exec(name=name, type=project_type, vcs=vcs, template=template)
+
+
+@main.command(help='Start a project', help_priority=1)
+@click.argument('name', required=True)
+def start(name: str):
+    """
+    Start command
+    :param name: the name of the project
+    :return:
+    """
+    command = StartCommand()
+    command.exec(name=name)
+
+
+@main.command(help='Stop a project', help_priority=1)
+@click.argument('name', required=True)
+def stop(name: str):
+    """
+    Stop command
+    :param name: the name of the project
+    :return:
+    """
+    command = StartCommand()
+    command.exec(name=name)
 
 
 if __name__ == '__main__':
-    main()
+    main(False, False)

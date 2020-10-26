@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 
 
 class AbstractCommand(ABC):
+    """
+    Abstract command
+    """
 
     @abstractmethod
     def exec(self, **kwargs):
@@ -10,4 +13,3 @@ class AbstractCommand(ABC):
         :param kwargs: all needed arguments
         :return:
         """
-        pass

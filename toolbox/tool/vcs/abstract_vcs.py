@@ -20,7 +20,7 @@ class AbstractVCS(ABC):
         """
         gitignore_content = []
         if project.type.gitignore is not None:
-            gitignore_content.append(self.get_gitignore_template_from_connector(project.type.gitignore).source)
+            gitignore_content.append(self.get_gitignore_template_from_connector(project.type.gitignore))
         if config.get('gitignore') is not None:
             gitignore_content.extend(config.get('gitignore'))
         return '\n'.join(gitignore_content)
@@ -32,7 +32,6 @@ class AbstractVCS(ABC):
         Retrieve the base url
         :return:
         """
-        pass
 
     @abstractmethod
     def get_gitignore_template_from_connector(self, template: str) -> str:
@@ -40,7 +39,6 @@ class AbstractVCS(ABC):
         Retrieve the gitignore template from the connector
         :return:
         """
-        pass
 
     @abstractmethod
     def get_repository_name(self, project: Project) -> str:
@@ -49,7 +47,6 @@ class AbstractVCS(ABC):
         :param project: The project
         :return: the full repository name
         """
-        pass
 
     @abstractmethod
     def create_project(self, project: Project) -> str:
@@ -58,4 +55,3 @@ class AbstractVCS(ABC):
         :param project: The project
         :return: the url
         """
-        pass

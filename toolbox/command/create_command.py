@@ -13,32 +13,33 @@ from toolbox.tool.vcs import get_vcs
 
 
 class CreateCommand:
-    def __init__(self):
-        pass
+    """
+    Create command
+    """
 
     def exec(self, **kwargs):
         """
         Exec the command
-        :param type: Project's type
+        :param type_name: Project's type
         :param name: Project's name
         :param vcs: Project's vcs (default: none)
         :param template: Project's tempalte (default: none)
         :return:
         """
-        type = kwargs.get('type')
+        type_name = kwargs.get('type')
         name = kwargs.get('name')
         vcs_type = kwargs.get('vcs')
         template = kwargs.get('template')
 
-        if type not in config.get('project_type').keys():
-            logging.error('Unknown type, valid ones are : {}'.format(', '.join(config.get('project_type').keys())))
+        if type_name not in config.get('project_type').keys():
+            logging.error('Unknown type, valid ones are : %', ', '.join(config.get('project_type').keys()))
             sys.exit(1)
-        project_type = config.get('project_type').get(type)
+        project_type = config.get('project_type').get(type_name)
 
         if vcs_type is None:
             vcs_config = None
         elif vcs_type not in config.get('vcs').keys():
-            logging.error('Unknown vcs, valid ones are : {}'.format(', '.join(config.get('vcs').keys())))
+            logging.error('Unknown vcs, valid ones are : %', ', '.join(config.get('vcs').keys()))
             sys.exit(1)
         else:
             vcs_config = config.get('vcs').get(vcs_type)
@@ -77,7 +78,7 @@ class CreateCommand:
         if vcs is not None and repo_name is not None:
             webbrowser.open('/'.join([vcs.get_base_url(), repo_name]))
 
-        project.exec_commands()
+        project.type.exec_commands()
 
     @staticmethod
     def _create_folder(project: Project):
@@ -89,7 +90,7 @@ class CreateCommand:
             logging.info('Project already exist, no need to create the folder')
         else:
             pathlib.Path(project.get_path()).mkdir(parents=True, exist_ok=True)
-            logging.info('Project folder created \'{}\''.format(project.get_path()))
+            logging.info('Project folder created "%"', project.get_path())
 
     @staticmethod
     def _copy_template(project: Project, template_name: str):
@@ -98,15 +99,16 @@ class CreateCommand:
         :param project: the project
         """
         if project.type.templates.get(template_name) is None:
-            logging.error('Unknown template {}, valid ones are : {}'.format(template_name,
-                                                                            ', '.join(project.type.templates.keys())))
+            logging.error('Unknown template %, valid ones are : %',
+                          template_name,
+                          ', '.join(project.type.templates.keys()))
             sys.exit(1)
 
         template: Template = project.type.templates.get(template_name)
 
         files = os.listdir(project.get_path())
         if len(files) > 0:
-            logging.warning("Unable to copy template {} because project is already initialized".format(template.name))
+            logging.warning("Unable to copy template % because project is already initialized", template.name)
             return
 
         template.copy(project.get_path())
@@ -135,7 +137,7 @@ class CreateCommand:
                 logging.info('Retrieving the origin remote')
             except NoSectionError:
                 origin = repo.create_remote('origin', repo_url)
-                logging.info('Adding the remote "origin" : {}'.format(repo_url))
+                logging.info('Adding the remote "origin" : %', repo_url)
 
         if len(repo.untracked_files) > 0:
             repo.git.add('.')

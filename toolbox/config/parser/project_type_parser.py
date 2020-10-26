@@ -8,9 +8,6 @@ class ProjectTypeParser(AbstractParser):
     Parse project type configuration
     """
 
-    def __init__(self, config):
-        super().__init__(config)
-
     def get_config_key(self) -> str:
         return 'project_type'
 
@@ -19,15 +16,19 @@ class ProjectTypeParser(AbstractParser):
 
         project_types: dict = {}
 
-        for type in project_types_config.keys():
-            type_config = project_types_config[type]
+        for project_type_name in project_types_config.keys():
+            type_config = project_types_config[project_type_name]
             folder = type_config.get('folder')
-            exec = type_config.get('exec')
+            exec_command = type_config.get('exec')
             git = type_config.get('git')
             templates_config = type_config.get('templates')
             gitignore = type_config.get('gitignore')  # see https://github.com/github/gitignore
 
-            project_type = ProjectType(type, folder, exec=exec, git=git, gitignore=gitignore)
+            project_type = ProjectType(project_type_name,
+                                       folder,
+                                       exec_command=exec_command,
+                                       git=git,
+                                       gitignore=gitignore)
 
             templates = {}
             if templates_config is not None:
