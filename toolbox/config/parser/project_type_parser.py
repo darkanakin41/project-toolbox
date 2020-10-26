@@ -21,6 +21,7 @@ class ProjectTypeParser(AbstractParser):
             folder = type_config.get('folder')
             exec_command = type_config.get('exec')
             git = type_config.get('git')
+            virtual_machine = type_config.get('virtual_machine')
             templates_config = type_config.get('templates')
             gitignore = type_config.get('gitignore')  # see https://github.com/github/gitignore
 
@@ -28,7 +29,8 @@ class ProjectTypeParser(AbstractParser):
                                        folder,
                                        exec_command=exec_command,
                                        git=git,
-                                       gitignore=gitignore)
+                                       gitignore=gitignore,
+                                       virtual_machine=virtual_machine)
 
             templates = {}
             if templates_config is not None:
@@ -37,6 +39,6 @@ class ProjectTypeParser(AbstractParser):
 
             project_type.templates = templates
 
-            project_types[type] = project_type
+            project_types[project_type_name] = project_type
 
         self.parsed = project_types

@@ -6,3 +6,4 @@ PyYAML
 PyGithub
 gitpython
 mutagen-helper
+paramiko

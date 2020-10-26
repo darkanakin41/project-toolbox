@@ -7,6 +7,7 @@ from mutagen_helper.manager import Manager
 from toolbox.command.abstract_command import AbstractCommand
 from toolbox.config import config
 from toolbox.model.config.project_type import ProjectType
+from toolbox.tool.virtual_machine import get_virtual_machine_manager
 
 
 class StopCommand(AbstractCommand):
@@ -15,7 +16,8 @@ class StopCommand(AbstractCommand):
     """
 
     def exec(self, **kwargs):
-        name = kwargs.get('name')
+        name: str = kwargs.get('name')
+        virtual_machine: bool = kwargs.get('vm')
         if not StopCommand.exists(name):
             logging.error('Unable to find %s path', name)
             sys.exit(1)
@@ -31,7 +33,9 @@ class StopCommand(AbstractCommand):
             mutagen_helper = Manager()
             mutagen_helper.down(path=project_type.get_folder(), project=name)
 
-        project_type.exec_commands(self.path(name))
+        logging.debug("Project virtual machine is %s", project_type.virtual_machine)
+        if project_type.virtual_machine and virtual_machine:
+            self.stop_virtual_machine(project_type.virtual_machine)
 
     @staticmethod
     def path(name: str) -> str:
@@ -63,3 +67,17 @@ class StopCommand(AbstractCommand):
             if project_type.get_folder() in cwd:
                 return project_type
         return None
+
+    @staticmethod
+    def stop_virtual_machine(virtual_machine_name: str):
+        """
+        Stop the virtual machine
+        :param virtual_machine_name: the name of the virtual machine
+        """
+        if virtual_machine_name not in config.get('virtual_machine').keys():
+            logging.error('Unknown virtual_machine, valid ones are %s', ', '.join(config.get('project_type').keys()))
+            sys.exit(1)
+
+        virtual_machine = config.get('virtual_machine').get(virtual_machine_name)
+        manager = get_virtual_machine_manager(virtual_machine)
+        manager.stop()

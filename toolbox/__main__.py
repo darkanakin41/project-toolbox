@@ -6,12 +6,14 @@ import click
 from toolbox.__version__ import __version__
 from toolbox.command.create_command import CreateCommand
 from toolbox.command.start_command import StartCommand
+from toolbox.command.stop_command import StopCommand
 
 
 class SpecialHelpOrder(click.Group):
     """
     The special help order
     """
+
     def __init__(self, *args, **kwargs):
         self.help_priorities = {}
         super(SpecialHelpOrder, self).__init__(*args, **kwargs)
@@ -96,14 +98,16 @@ def start(name: str):
 
 @main.command(help='Stop a project', help_priority=1)
 @click.argument('name', required=True)
-def stop(name: str):
+@click.option('--vm', required=False, default=False, is_flag=True)
+def stop(name: str, vm: bool):
     """
     Stop command
     :param name: the name of the project
+    :param vm: if the vm is stopped as well
     :return:
     """
-    command = StartCommand()
-    command.exec(name=name)
+    command = StopCommand()
+    command.exec(name=name, vm=vm)
 
 
 if __name__ == '__main__':

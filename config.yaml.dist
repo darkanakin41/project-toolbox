@@ -11,12 +11,14 @@ project_type:
   gfi:
     folder: 'GFI'
     exec: 'idea'
+    virtual_machine: 'devbox'
     git:
       user:
         email: 'pierre.lejeune@gfi.fr'
-  php:
+  web:
     folder: 'web'
     exec: 'idea'
+    virtual_machine: 'devbox'
   python:
     folder: 'python'
     exec: 'idea'

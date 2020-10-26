@@ -13,13 +13,15 @@ class ProjectType:
                  exec_command: str = None,
                  templates: dict = dict(),
                  git: dict = dict(),
-                 gitignore: str = None):
+                 gitignore: str = None,
+                 virtual_machine: str = None):
         self.name = name
         self.folder = folder
         self.exec = exec_command
         self.templates = templates
         self.git = git
         self.gitignore = gitignore
+        self.virtual_machine = virtual_machine
 
     def get_folder(self) -> str:
         """

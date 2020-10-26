@@ -11,7 +11,7 @@ class AbstractParser(ABC):
     def __init__(self, config: dict):
         self.parsed = {}
         if config.get(self.get_config_key()) is None:
-            logging.error("No project types configuration detected")
+            logging.error("No %s configuration detected", self.get_config_key())
             sys.exit(1)
         else:
             self.parse(config)
