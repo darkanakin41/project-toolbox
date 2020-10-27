@@ -77,7 +77,7 @@ class StartCommand(AbstractCommand):
         :param virtual_machine_name: the name of the virtual machine
         """
         if virtual_machine_name not in config.get('virtual_machine').keys():
-            logging.error('Unknown virtual_machine, valid ones are %s', ', '.join(config.get('project_type').keys()))
+            logging.error('Unknown virtual_machine, valid ones are %s', ', '.join(config.get('virtual_machine').keys()))
             sys.exit(1)
 
         virtual_machine = config.get('virtual_machine').get(virtual_machine_name)

@@ -1,4 +1,4 @@
-base_folder: "J:\\projects"
+base_folder: %userprofile%
 gitignore:
   - '###> darkanakin41/project-generator'
   - '.idea'
@@ -8,15 +8,8 @@ project_type:
   default:
     folder: 'idea'
     exec: 'code'
-  gfi:
-    folder: 'GFI'
-    exec: 'idea'
-    virtual_machine: 'devbox'
-    git:
-      user:
-        email: 'pierre.lejeune@gfi.fr'
   web:
-    folder: 'web'
+    folder: 'projects'
     exec: 'idea'
     virtual_machine: 'devbox'
   python:
@@ -33,15 +26,10 @@ vcs:
     user: "darkanakin41"
     token: "af800811252ca7f5267dfb01c760da6d7fab4bd8"
 
-vm:
-  types:
-    workstation:
-      type: "vmware"
-      exe: "D:\VMware Workstation\vmrun.exe"
-  instances:
-    devbox:
-      path: "H:\Debian 10 Devbox\Clone of Debian 10.x 64-bit.vmx"
-      type: "workstation"
-      hostname: "192.168.154.128"
-      ssh_username: "devbox"
-      ssh_password: "devbox"
+virtual_machine:
+  devbox:
+    path: %userprofile%\projects\docker-devbox-vagrant
+    type: "vagrant"
+    hostname: "192.168.1.200"
+    ssh_username: "vagrant"
+    exe: C:\HashiCorp\Vagrant\bin\vagrant.exe
