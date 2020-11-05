@@ -6,13 +6,17 @@ import webbrowser
 from configparser import NoSectionError
 
 from git import Repo, InvalidGitRepositoryError
+from mutagen_helper.manager import Manager
+
+from toolbox.command.abstract_command import AbstractCommand
+from toolbox.command.abstract_virtual_machine_command import AbstractVirtualMachineCommand
 from toolbox.config import config
 from toolbox.model.project import Project
 from toolbox.model.template import Template
 from toolbox.tool.vcs import get_vcs
 
 
-class CreateCommand:
+class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
     """
     Create command
     """
@@ -68,17 +72,25 @@ class CreateCommand:
             project.add_file('README.md', '\n'.join([
                 repo_name,
                 '===',
-                'This project have been generated with [darkanakin41/project-generator]'
-                '(https://github.com/darkanakin41/project-generator)'
+                'This project have been generated with [darkanakin41/project-toolbox]'
+                '(https://github.com/darkanakin41/project-toolbox)'
             ]))
 
         if repo_url is not None:
-            CreateCommand._init_git(project, repo_url)
+            self._init_git(project, repo_url)
 
         if vcs is not None and repo_name is not None:
             webbrowser.open('/'.join([vcs.get_base_url(), repo_name]))
 
-        project.type.exec_commands()
+        if project.type.virtual_machine is not None:
+            self.start_virtual_machine(project.type.virtual_machine)
+
+        if project.type.is_mutagened():
+            logging.info("Mutagen configuration detected")
+            mutagen_helper = Manager()
+            mutagen_helper.up(path=project.type.get_folder(), project=name)
+
+        project.type.exec_commands(path=project.get_path())
 
     @staticmethod
     def _create_folder(project: Project):

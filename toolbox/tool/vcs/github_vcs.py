@@ -38,7 +38,7 @@ class GithubVCS(AbstractVCS):
         user = self.connector.get_user()
         if repo is None:
             repo = user.create_repo(project.name)
-        repo.edit(description="This is a project generated using darkanakin41/project-generator",
+        repo.edit(description="This is a project generated using darkanakin41/project-toolbox",
                   private=True)
 
         return repo.ssh_url
