@@ -1,8 +1,8 @@
 base_folder: %userprofile%
 gitignore:
-  - '###> darkanakin41/project-generator'
+  - '###> darkanakin41/project-toolbox'
   - '.idea'
-  - '###< darkanakin41/project-generator'
+  - '###< darkanakin41/project-toolbox'
 
 project_type:
   default:

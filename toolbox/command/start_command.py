@@ -13,7 +13,8 @@ class StartCommand(AbstractCommand, AbstractVirtualMachineCommand):
     """
 
     def exec(self, **kwargs):
-        name = kwargs.get('name')
+        name:str = kwargs.get('name')
+        noexec:bool = kwargs.get('noexec')
         if not StartCommand.exists(name):
             logging.error("Unable to find %s path", name)
             sys.exit(1)
@@ -33,4 +34,5 @@ class StartCommand(AbstractCommand, AbstractVirtualMachineCommand):
             mutagen_helper = Manager()
             mutagen_helper.up(path=project_type.get_folder(), project=name)
 
-        project_type.exec_commands(self.path(name))
+        if not noexec:
+            project_type.exec_commands(self.path(name))

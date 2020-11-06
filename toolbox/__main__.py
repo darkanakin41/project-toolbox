@@ -86,14 +86,15 @@ def create(name: str, project_type: str, vcs: str = None, template: str = None):
 
 @main.command(help='Start a project', help_priority=1)
 @click.argument('name', required=True)
-def start(name: str):
+@click.option('--noexec', required=False, default=False, is_flag=True)
+def start(name: str, noexec: bool):
     """
     Start command
     :param name: the name of the project
     :return:
     """
     command = StartCommand()
-    command.exec(name=name)
+    command.exec(name=name, noexec=noexec)
 
 
 @main.command(help='Stop a project', help_priority=1)
