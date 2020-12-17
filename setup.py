@@ -9,6 +9,7 @@ from setuptools import setup, find_packages
 
 folder = 'toolbox'
 project_name = 'project-toolbox'
+executable = 'dpt'
 
 here = os.path.abspath(os.path.dirname(__file__))
 history = ""
@@ -47,7 +48,7 @@ package_data = []
 
 entry_points = {
     'console_scripts': [
-        '{} = {}.__main__:main'.format(project_name, folder)
+        '{} = {}.__main__:main'.format(executable, folder)
     ]
 }
 

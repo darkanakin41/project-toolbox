@@ -20,6 +20,7 @@ Commands:
   create  Create a new project
   start   Start a project
   stop    Stop a project
+  list    List projects with mutagen status
 ```
 
 # Documentation

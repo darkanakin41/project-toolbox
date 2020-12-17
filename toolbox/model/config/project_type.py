@@ -31,6 +31,14 @@ class ProjectType:
         from toolbox.config import config
         return os.path.join(config.get('base_folder'), self.folder)
 
+    def get_projects(self) -> list:
+        """
+        Get all projects for the given type
+        :return:
+        """
+        from toolbox.model.project import Project
+        return [Project(f, self) for f in os.listdir(self.get_folder()) if not f.startswith(tuple(['.', '$'])) and os.path.isdir(os.path.join(self.get_folder(), f))]
+
     def is_mutagened(self) -> bool:
         """
         Check if the current type of project have mutagen configuratio

@@ -35,16 +35,12 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
         vcs_type = kwargs.get('vcs')
         template = kwargs.get('template')
 
-        if type_name not in config.get('project_type').keys():
-            logging.error('Unknown type, valid ones are %s', ', '.join(config.get('project_type').keys()))
-            sys.exit(1)
-        project_type = config.get('project_type').get(type_name)
+        CreateCommand.validate_project_type(type_name)
+        CreateCommand.validate_vcs_type(vcs_type)
 
+        project_type = config.get('project_type').get(type_name)
         if vcs_type is None:
             vcs_config = None
-        elif vcs_type not in config.get('vcs').keys():
-            logging.error('Unknown vcs, valid ones are %s', ', '.join(config.get('vcs').keys()))
-            sys.exit(1)
         else:
             vcs_config = config.get('vcs').get(vcs_type)
 

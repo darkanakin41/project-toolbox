@@ -1,5 +1,7 @@
 import os
 
+from mutagen_helper.manager import Manager
+
 from toolbox.model.config.project_type import ProjectType
 from toolbox.model.config.vcs import Vcs
 
@@ -44,3 +46,20 @@ class Project:
         """
         with open(os.path.join(self.get_path(), filename), "w") as stream:
             stream.write(content)
+
+    def get_mutagen_status(self) -> str:
+        """
+        Check mutagen status
+        :return: str
+        """
+        if not self.type.is_mutagened():
+            return ''
+
+        mutagen_helper = Manager()
+        entries = mutagen_helper.list(path=self.type.get_folder(), project=self.name)
+
+        if len(entries) != 1:
+            return ''
+        if entries[0].get('Last error') is not None:
+            return entries[0].get('Status') + ', Last Error: ' + entries[0].get('Last error')
+        return entries[0].get('Status')

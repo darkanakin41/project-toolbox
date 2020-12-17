@@ -7,6 +7,7 @@ from toolbox.__version__ import __version__
 from toolbox.command.create_command import CreateCommand
 from toolbox.command.start_command import StartCommand
 from toolbox.command.stop_command import StopCommand
+from toolbox.command.list_command import ListCommand
 
 
 class SpecialHelpOrder(click.Group):
@@ -109,6 +110,22 @@ def stop(name: str, vm: bool):
     """
     command = StopCommand()
     command.exec(name=name, vm=vm)
+
+
+@main.command(help='List projects and status', help_priority=1)
+@click.argument('project', required=False, default=None)
+@click.option('--type', required=False)
+@click.option('--active', required=False, default=False, is_flag=True)
+@click.option('--watch', required=False, default=False, is_flag=True)
+def list(active: bool, watch: bool, project: str = None, type: str = None):
+    """
+    LIst command
+    :param project: the name of the project
+    :param type: the type of project
+    :return:
+    """
+    command = ListCommand()
+    command.exec(project=project, type=type, only_active=active, watch=watch)
 
 
 if __name__ == '__main__':

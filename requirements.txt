@@ -7,3 +7,4 @@ PyGithub
 gitpython
 mutagen-helper
 paramiko
+prettytable
