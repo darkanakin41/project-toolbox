@@ -82,6 +82,8 @@ class ProjectType:
             self.mutagen_entries = []
             return
 
+        logger.debug(self.name + " : refresh mutagen")
+
         mutagen_helper = Manager()
         self.mutagen_entries = mutagen_helper.list(path=self.get_folder())
 

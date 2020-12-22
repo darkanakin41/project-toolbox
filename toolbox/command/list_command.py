@@ -25,6 +25,27 @@ class ListCommand(Command):
         self.params.append(click.Option(['--all'], default=False, is_flag=True, help='Display all projects'))
         self.params.append(click.Option(['--watch'], default=False, is_flag=True, help='Watch mode'))
 
+    def invoke(self, ctx: click.Context):
+        project_name: str = ctx.params.get('project')
+        project_type: str = ctx.params.get('type')
+        all: bool = ctx.params.get('all')
+        watch: bool = ctx.params.get('watch')
+
+        ListCommand.validate_project_type(project_type)
+
+        project_types = self._get_project_types(project_type)
+
+        if watch:
+            while True:
+                for t in project_types:
+                    t.refresh_mutagen_entries()
+                projects = self._get_projects(project_types, project_name)
+                self._display(projects=projects, all=all)
+                time.sleep(5)
+        else:
+            projects = self._get_projects(project_types, project_name)
+            self._display(projects=projects, all=all)
+
     def _display(self, projects: list, all: bool):
         """
         Display projects
@@ -43,34 +64,38 @@ class ListCommand(Command):
         os.system('cls')
         print(table)
 
-    def invoke(self, ctx: click.Context):
-        project: str = ctx.params.get('project')
-        project_type: str = ctx.params.get('type')
-        all: bool = ctx.params.get('all')
-        watch: bool = ctx.params.get('watch')
+    @staticmethod
+    def _get_projects(project_types, project_name: str = None):
+        """
+        Get projects
+        :param project_types:
+        :param project_name:
+        :return:
+        """
+        projects = []
+        for pt in project_types:
+            projects += pt.get_projects()
+        projects.sort(key=lambda x: x.type.name + x.name)
 
-        ListCommand.validate_project_type(project_type)
-        projects_type = map(lambda pt: pt[1], config.get('project_type').items())
+        if project_name is not None:
+            projects = [p for p in projects if project_name == p.name]
+
+        return projects
+
+    @staticmethod
+    def _get_project_types(project_type: str = None):
+        """
+        Get project types
+        :param project_type: name of project_type
+        :return:
+        """
         if project_type is not None:
             project_type_config = config.get('project_type').get(project_type)
-            projects_type = [project_type_config]
-
-        all_projects = []
-        for pt in projects_type:
-            all_projects += pt.get_projects()
-        all_projects.sort(key=lambda x: x.type.name + x.name)
-
-        if project is not None:
-            all_projects = [p for p in all_projects if project == p.name]
-
-        if watch:
-            while True:
-                for t in projects_type:
-                    t.refresh_mutagen_entries()
-                self._display(projects=all_projects, all=all)
-                time.sleep(10)
+            project_types = [project_type_config]
         else:
-            self._display(projects=all_projects, all=all)
+            project_types = list(map(lambda pt: pt[1], config.get('project_type').items()))
+
+        return project_types
 
 
 command = ListCommand()

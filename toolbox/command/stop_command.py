@@ -21,7 +21,7 @@ class StopCommand(Command, CommandVirtualMachine):
         self.params.append(click.Option(['--vm'], default=False, is_flag=True, help='Stop the vm too'))
 
     def invoke(self, ctx: click.Context):
-        name: str = ctx.params.get('name')
+        name: str = ctx.params.get('project')
         virtual_machine: bool = ctx.params.get('vm')
         if not self.exists(name):
             logger.error('Unable to find %s path', name)
