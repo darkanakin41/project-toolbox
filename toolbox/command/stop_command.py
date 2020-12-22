@@ -1,6 +1,9 @@
 import logging
 import sys
 
+from click import Argument, Context
+from click import Option
+
 from mutagen_helper.manager import Manager
 
 from toolbox.command.abstract_command import AbstractCommand
@@ -12,9 +15,16 @@ class StopCommand(AbstractCommand, AbstractVirtualMachineCommand):
     Stop command
     """
 
-    def exec(self, **kwargs):
-        name: str = kwargs.get('name')
-        virtual_machine: bool = kwargs.get('vm')
+    def __init__(self):
+        super().__init__('start')
+        self.help = 'Stop a project'
+        self.no_args_is_help = True
+        self.params.append(Argument(['project'], required=True, default=None))
+        self.params.append(Option(['--vm'], default=False, is_flag=True, help='Stop the vm too'))
+
+    def invoke(self, ctx: Context):
+        name: str = ctx.params.get('name')
+        virtual_machine: bool = ctx.params.get('vm')
         if not self.exists(name):
             logging.error('Unable to find %s path', name)
             sys.exit(1)
@@ -33,3 +43,5 @@ class StopCommand(AbstractCommand, AbstractVirtualMachineCommand):
         logging.debug("Project virtual machine is %s", project_type.virtual_machine)
         if project_type.virtual_machine and virtual_machine:
             self.stop_virtual_machine(project_type.virtual_machine)
+
+command = StopCommand()

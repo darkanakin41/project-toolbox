@@ -1,6 +1,7 @@
 import logging
 import sys
 
+from click import Argument, Option, Context
 from mutagen_helper.manager import Manager
 
 from toolbox.command.abstract_command import AbstractCommand
@@ -12,9 +13,16 @@ class StartCommand(AbstractCommand, AbstractVirtualMachineCommand):
     Start command
     """
 
-    def exec(self, **kwargs):
-        name:str = kwargs.get('name')
-        noexec:bool = kwargs.get('noexec')
+    def __init__(self):
+        super().__init__('start')
+        self.help = 'Start a project'
+        self.no_args_is_help = True
+        self.params.append(Argument(['project'], required=True, default=None))
+        self.params.append(Option(['--noexec'], default=False, is_flag=True, help='Don\'t run specified exec commands'))
+
+    def invoke(self, ctx: Context):
+        name: str = ctx.params.get('project')
+        noexec: bool = ctx.params.get('noexec')
         if not StartCommand.exists(name):
             logging.error("Unable to find %s path", name)
             sys.exit(1)
@@ -36,3 +44,6 @@ class StartCommand(AbstractCommand, AbstractVirtualMachineCommand):
 
         if not noexec:
             project_type.exec_commands(self.path(name))
+
+
+command = StartCommand()

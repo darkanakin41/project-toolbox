@@ -1,136 +1,56 @@
-import logging
-import sys
+import os
 
-import click
+from click import Group
 
-from toolbox.__version__ import __version__
-from toolbox.command.create_command import CreateCommand
-from toolbox.command.list_command import ListCommand
-from toolbox.command.start_command import StartCommand
-from toolbox.command.stop_command import StopCommand
-from toolbox.config import project_type_names, vcs_names
+plugin_folder = os.path.join(os.path.dirname(__file__), 'command')
 
 
-class SpecialHelpOrder(click.Group):
+class MainCommands(Group):
     """
-    The special help order
+    List of main commands
     """
 
-    def __init__(self, *args, **kwargs):
-        self.help_priorities = {}
-        super(SpecialHelpOrder, self).__init__(*args, **kwargs)
+    # def __init__(self, **attrs):
+    #     super().__init__(**attrs)
+    #     self.params.append(Option(['-v', '--verbose'],
+    #                               default=False,
+    #                               is_flag=True,
+    #                               help='Add more output'))
+    #     self.params.append(Option(['-s', '--silent'],
+    #                               default=False,
+    #                               is_flag=True,
+    #                               help='Not output at all'))
 
-    def get_help(self, ctx):
-        self.list_commands = self.list_commands_for_help
-        return super(SpecialHelpOrder, self).get_help(ctx)
+    # def invoke(self, ctx: Context):
+    #     if not ctx.params.get('silent'):
+    #         print('Silent mode is off')
+    #         root = logging.getLogger()
+    #         if ctx.params.get('verbose'):
+    #             print('Verbose mode is on')
+    #             root.setLevel(logging.DEBUG)
+    #         else:
+    #             print('Verbose mode is off')
+    #             root.setLevel(logging.INFO)
+    #
+    #         handler = logging.StreamHandler(sys.stdout)
+    #         handler.setLevel(logging.DEBUG)
+    #         formatter = logging.Formatter('[%(levelname)s] %(message)s')
+    #         handler.setFormatter(formatter)
+    #         root.addHandler(handler)
 
-    def list_commands_for_help(self, ctx):
-        """reorder the list of commands when listing the help"""
-        commands = super(SpecialHelpOrder, self).list_commands(ctx)
-        return (c[1] for c in sorted(
-            (self.help_priorities.get(command, 1), command)
-            for command in commands))
+    def list_commands(self, ctx):
+        return ['create', 'start', 'stop', 'list']
 
-    def command(self, *args, **kwargs):
-        """Behaves the same as `click.Group.command()` except capture
-        a priority for listing command names in help.
-        """
-        help_priority = kwargs.pop('help_priority', 1)
-        help_priorities = self.help_priorities
-
-        def decorator(f):
-            cmd = super(SpecialHelpOrder, self).command(*args, **kwargs)(f)
-            help_priorities[cmd.name] = help_priority
-            return cmd
-
-        return decorator
-
-
-@click.group(context_settings=dict(help_option_names=['-h', '--help']), cls=SpecialHelpOrder)
-@click.version_option(prog_name='project-toolbox', version=__version__)
-@click.option('-v', '--verbose', default=False, is_flag=True, help="Add more output")
-@click.option('-s', '--silent', default=False, is_flag=True, help="No output at all")
-def main(verbose, silent):
-    """
-    Main command group
-    """
-    if not silent:
-        root = logging.getLogger()
-        if verbose:
-            root.setLevel(logging.DEBUG)
-        else:
-            root.setLevel(logging.INFO)
-
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('[%(levelname)s] %(message)s')
-        handler.setFormatter(formatter)
-        root.addHandler(handler)
+    def get_command(self, ctx, name):
+        ns = {}
+        fn = os.path.join(plugin_folder, name + '_command.py')
+        with open(fn) as f:
+            code = compile(f.read(), fn, 'exec')
+            eval(code, ns, ns)
+        return ns['command']
 
 
-@main.command(help='Create a new project', help_priority=1)
-@click.argument('name', required=True)
-@click.argument('project_type', required=True, type=click.Choice(project_type_names()))
-@click.option('--vcs', required=False, type=click.Choice(vcs_names()))
-@click.option('--template', required=False)
-def create(name: str, project_type: str, vcs: str = None, template: str = None):
-    """
-    Create command
-    :param name: The name of the project
-    :param project_type: The type of the project
-    :param vcs: The VCS to use
-    :param template: The template to clone
-    :return:
-    """
-    command = CreateCommand()
-    command.exec(name=name, type=project_type, vcs=vcs, template=template)
-
-
-@main.command(help='Start a project', help_priority=1)
-@click.argument('name', required=True)
-@click.option('--noexec', required=False, default=False, is_flag=True)
-def start(name: str, noexec: bool):
-    """
-    Start command
-    :param name: the name of the project
-    :param noexec: disable exec
-    :return:
-    """
-    command = StartCommand()
-    command.exec(name=name, noexec=noexec)
-
-
-@main.command(help='Stop a project', help_priority=1)
-@click.argument('name', required=True)
-@click.option('--vm', required=False, default=False, is_flag=True)
-def stop(name: str, vm: bool):
-    """
-    Stop command
-    :param name: the name of the project
-    :param vm: if the vm is stopped as well
-    :return:
-    """
-    command = StopCommand()
-    command.exec(name=name, vm=vm)
-
-
-@main.command(help='List projects and status', help_priority=1)
-@click.argument('project', required=False, default=None)
-@click.option('--type', required=False, type=click.Choice(project_type_names()))
-@click.option('--all', required=False, default=False, is_flag=True)
-@click.option('--watch', required=False, default=False, is_flag=True)
-def list(all: bool, watch: bool, project: str = None, type: str = None):
-    """
-    LIst command
-    :param project: the name of the project
-    :param type: the type of project
-    :param watch: enable watch mode
-    :param all: display all projects
-    :return:
-    """
-    command = ListCommand()
-    command.exec(project=project, type=type, all=all, watch=watch)
-
+main = MainCommands()
 
 if __name__ == '__main__':
-    main(False, False)
+    main()

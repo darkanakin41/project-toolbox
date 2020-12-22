@@ -2,22 +2,52 @@ import os
 import time
 from datetime import datetime
 
+from click import Context, Argument, Option, Choice
 from prettytable import PrettyTable
 
 from toolbox.command.abstract_command import AbstractCommand
-from toolbox.config import config
+from toolbox.config import config, project_type_names
 
 
 class ListCommand(AbstractCommand):
     """
-    Stop command
+    List command
     """
 
-    def exec(self, **kwargs):
-        project: str = kwargs.get('project')
-        project_type: str = kwargs.get('type')
-        all: bool = kwargs.get('all')
-        watch: bool = kwargs.get('watch')
+    def __init__(self):
+        super().__init__('list')
+        self.help = 'List projects and status'
+        self.params.append(Argument(['project'], required=False, default=None))
+        self.params.append(Option(['--type'],
+                                  required=False,
+                                  type=Choice(project_type_names()),
+                                  help='Display only given type'))
+        self.params.append(Option(['--all'], default=False, is_flag=True, help='Display all projects'))
+        self.params.append(Option(['--watch'], default=False, is_flag=True, help='Watch mode'))
+
+    def _display(self, projects: list, all: bool):
+        """
+        Display projects
+        :param projects: the list of projects
+        :param all: filter only on active projects
+        :return: void
+        """
+        table = PrettyTable(['Project', 'Type', 'Mutagen Active'])
+        table.align["Project"] = "l"
+        table.align["Mutagen Active"] = "l"
+        for p in projects:
+            status = p.get_mutagen_status()
+            if all or len(status) > 0:
+                table.add_row([p.name, p.type.name, p.get_mutagen_status()])
+        table.title = 'Project Toolbox - ' + datetime.today().ctime()
+        os.system('cls')
+        print(table)
+
+    def invoke(self, ctx: Context):
+        project: str = ctx.params.get('project')
+        project_type: str = ctx.params.get('type')
+        all: bool = ctx.params.get('all')
+        watch: bool = ctx.params.get('watch')
 
         ListCommand.validate_project_type(project_type)
         projects_type = map(lambda pt: pt[1], config.get('project_type').items())
@@ -42,20 +72,5 @@ class ListCommand(AbstractCommand):
         else:
             self._display(projects=all_projects, all=all)
 
-    def _display(self, projects: list, all: bool):
-        """
-        Display projects
-        :param projects: the list of projects
-        :param all: filter only on active projects
-        :return: void
-        """
-        table = PrettyTable(['Project', 'Type', 'Mutagen Active'])
-        table.align["Project"] = "l"
-        table.align["Mutagen Active"] = "l"
-        for p in projects:
-            status = p.get_mutagen_status()
-            if all or len(status) > 0:
-                table.add_row([p.name, p.type.name, p.get_mutagen_status()])
-        table.title = 'Project Toolbox - ' + datetime.today().ctime()
-        os.system('cls')
-        print(table)
+
+command = ListCommand()

@@ -5,12 +5,13 @@ import sys
 import webbrowser
 from configparser import NoSectionError
 
+from click import Argument, Option, Choice, Context
 from git import Repo, InvalidGitRepositoryError
 from mutagen_helper.manager import Manager
 
 from toolbox.command.abstract_command import AbstractCommand
 from toolbox.command.abstract_virtual_machine_command import AbstractVirtualMachineCommand
-from toolbox.config import config
+from toolbox.config import config, project_type_names, vcs_names
 from toolbox.model.project import Project
 from toolbox.model.template import Template
 from toolbox.tool.vcs import get_vcs
@@ -21,19 +22,20 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
     Create command
     """
 
-    def exec(self, **kwargs):
-        """
-        Exec the command
-        :param type_name: Project's type
-        :param name: Project's name
-        :param vcs: Project's vcs (default: none)
-        :param template: Project's tempalte (default: none)
-        :return:
-        """
-        type_name = kwargs.get('type')
-        name = kwargs.get('name')
-        vcs_type = kwargs.get('vcs')
-        template = kwargs.get('template')
+    def __init__(self):
+        super().__init__('start')
+        self.help = 'Create a project'
+        self.no_args_is_help = True
+        self.params.append(Argument(['project'], required=True))
+        self.params.append(Argument(['type'], required=True, type=Choice(project_type_names())))
+        self.params.append(Option(['--vcs'], default=False, type=Choice(vcs_names()), help='Stop the vm too'))
+        self.params.append(Option(['--template'], default=False, help='Template to use'))
+
+    def invoke(self, ctx: Context):
+        type_name = ctx.params.get('type')
+        name = ctx.params.get('project')
+        vcs_type = ctx.params.get('vcs')
+        template = ctx.params.get('template')
 
         CreateCommand.validate_project_type(type_name)
         CreateCommand.validate_vcs_type(vcs_type)
@@ -167,3 +169,6 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
             section = configuration[section_key]
             for option_key in section.keys():
                 repo.config_writer().set_value(section_key, option_key, section[option_key])
+
+
+command = CreateCommand()

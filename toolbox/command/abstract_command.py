@@ -2,21 +2,18 @@ import logging
 import sys
 from abc import ABC, abstractmethod
 
+from click import Command, Context
+
 from toolbox.config import config
 
 
-class AbstractCommand(ABC):
+class AbstractCommand(ABC, Command):
     """
     Abstract command
     """
 
-    @abstractmethod
-    def exec(self, **kwargs):
-        """
-        Exec function
-        :param kwargs: all needed arguments
-        :return:
-        """
+    def invoke(self, ctx: Context):
+        raise NotImplementedError()
 
     @staticmethod
     def validate_project_type(type_name: str = None, kill: bool = True):
