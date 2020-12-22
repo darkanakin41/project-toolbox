@@ -1,4 +1,4 @@
-import logging
+from toolbox.tool.logger import logger
 import socket
 import time
 
@@ -22,7 +22,7 @@ def try_ssh(virtual_machine: VirtualMachine, retries: int = 10):
     ssh.load_system_host_keys()
     while retry < retries and not connected:
         try:
-            logging.debug('Trying ssh connection to %s %s out of %s retries', virtual_machine.hostname, retry, retries)
+            logger.debug('Trying ssh connection to %s %s out of %s retries', virtual_machine.hostname, retry, retries)
             ssh.connect(virtual_machine.hostname,
                         port=virtual_machine.ssh_port,
                         username=virtual_machine.ssh_username,
@@ -34,4 +34,4 @@ def try_ssh(virtual_machine: VirtualMachine, retries: int = 10):
 
     if not connected:
         raise Exception('[{}] Unable to connect to the machine after {} tries'.format(virtual_machine.hostname, retry))
-    logging.info('Connection established to %s after %d out of %d retries', virtual_machine.hostname, retry, retries)
+    logger.info('Connection established to %s after %d out of %d retries', virtual_machine.name, retry, retries)

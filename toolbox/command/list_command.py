@@ -5,11 +5,11 @@ from datetime import datetime
 import click
 from prettytable import PrettyTable
 
-from toolbox.command.abstract_command import AbstractCommand
+from toolbox.command.abstract.command import Command
 from toolbox.config import config, project_type_names
 
 
-class ListCommand(AbstractCommand):
+class ListCommand(Command):
     """
     List command
     """
@@ -19,9 +19,9 @@ class ListCommand(AbstractCommand):
         self.help = 'List projects and status'
         self.params.append(click.Argument(['project'], required=False, default=None))
         self.params.append(click.Option(['--type'],
-                                  required=False,
-                                  type=click.Choice(project_type_names()),
-                                  help='Display only given type'))
+                                        required=False,
+                                        type=click.Choice(project_type_names()),
+                                        help='Display only given type'))
         self.params.append(click.Option(['--all'], default=False, is_flag=True, help='Display all projects'))
         self.params.append(click.Option(['--watch'], default=False, is_flag=True, help='Watch mode'))
 

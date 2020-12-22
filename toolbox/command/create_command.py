@@ -1,4 +1,3 @@
-import logging
 import os
 import pathlib
 import sys
@@ -9,15 +8,16 @@ import click
 from git import Repo, InvalidGitRepositoryError
 from mutagen_helper.manager import Manager
 
-from toolbox.command.abstract_command import AbstractCommand
-from toolbox.command.abstract_virtual_machine_command import AbstractVirtualMachineCommand
+from toolbox.command.abstract.command import Command
+from toolbox.command.abstract.command_virtual_machine import CommandVirtualMachine
 from toolbox.config import config, project_type_names, vcs_names
 from toolbox.model.project import Project
 from toolbox.model.template import Template
+from toolbox.tool.logger import logger
 from toolbox.tool.vcs import get_vcs
 
 
-class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
+class CreateCommand(Command, CommandVirtualMachine):
     """
     Create command
     """
@@ -27,12 +27,15 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
         self.help = 'Create a project'
         self.no_args_is_help = True
         self.params.append(click.Argument(['project'], required=True))
-        self.params.append(click.Argument(['type'], required=True, type=click.Choice(project_type_names())))
-        self.params.append(click.Option(['--vcs'], default=False, type=click.Choice(vcs_names()), help='Stop the vm too'))
+        self.add_project_type_argument()
+        self.params.append(click.Option(['--vcs'],
+                                        default=False,
+                                        type=click.Choice(vcs_names()),
+                                        help='Stop the vm too'))
         self.params.append(click.Option(['--template'], default=False, help='Template to use'))
 
     def invoke(self, ctx: click.Context):
-        type_name = ctx.params.get('type')
+        type_name = ctx.params.get('project_type')
         name = ctx.params.get('project')
         vcs_type = ctx.params.get('vcs')
         template = ctx.params.get('template')
@@ -84,7 +87,7 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
             self.start_virtual_machine(project.type.virtual_machine)
 
         if project.type.is_mutagened():
-            logging.info("Mutagen configuration detected")
+            logger.info("Mutagen configuration detected")
             mutagen_helper = Manager()
             mutagen_helper.up(path=project.type.get_folder(), project=name)
 
@@ -97,10 +100,10 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
         :param project: the project
         """
         if project.exists():
-            logging.info('Project already exist, no need to create the folder')
+            logger.info('Project already exist, no need to create the folder')
         else:
             pathlib.Path(project.get_path()).mkdir(parents=True, exist_ok=True)
-            logging.info('Project folder %s created', project.get_path())
+            logger.info('Project folder %s created', project.get_path())
 
     @staticmethod
     def _copy_template(project: Project, template_name: str):
@@ -109,16 +112,16 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
         :param project: the project
         """
         if project.type.templates.get(template_name) is None:
-            logging.error('Unknown template %s, valid ones are %s',
-                          template_name,
-                          ', '.join(project.type.templates.keys()))
+            logger.error('Unknown template %s, valid ones are %s',
+                         template_name,
+                         ', '.join(project.type.templates.keys()))
             sys.exit(1)
 
         template: Template = project.type.templates.get(template_name)
 
         files = os.listdir(project.get_path())
         if len(files) > 0:
-            logging.warning("Unable to copy template %s because project is already initialized", template.name)
+            logger.warning("Unable to copy template %s because project is already initialized", template.name)
             return
 
         template.copy(project.get_path())
@@ -132,11 +135,11 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
         """
         try:
             Repo(project.get_path())
-            logging.info('This is already a git repository')
+            logger.info('This is already a git repository')
             return
         except InvalidGitRepositoryError:
             repo = Repo.init(project.get_path())
-            logging.info('Initialization of git repository')
+            logger.info('Initialization of git repository')
 
         CreateCommand._update_git_config(project, repo)
 
@@ -144,19 +147,19 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
         if repo_url is not None:
             try:
                 origin = repo.remote('origin')
-                logging.info('Retrieving the origin remote')
+                logger.info('Retrieving the origin remote')
             except NoSectionError:
                 origin = repo.create_remote('origin', repo_url)
-                logging.info('Adding the remote origin %s', repo_url)
+                logger.info('Adding the remote origin %s', repo_url)
 
         if len(repo.untracked_files) > 0:
             repo.git.add('.')
-            logging.info('Staging new files')
+            logger.info('Staging new files')
         if repo.is_dirty():
-            logging.info('Initial commit')
+            logger.info('Initial commit')
             repo.git.commit('-m "Initial commit"')
             if origin is not None:
-                logging.info('Pushing files to remote')
+                logger.info('Pushing files to remote')
                 repo.git.push("--set-upstream", origin, repo.head.ref)
 
     @staticmethod

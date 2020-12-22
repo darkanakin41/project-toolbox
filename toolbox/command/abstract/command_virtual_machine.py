@@ -1,16 +1,16 @@
-import logging
 import os
 import sys
 from abc import ABC
 
 from toolbox.config import config
 from toolbox.model.config.project_type import ProjectType
+from toolbox.model.config.virtual_machine import VirtualMachine
+from toolbox.tool.logger import logger
 from toolbox.tool.ssh import try_ssh
 from toolbox.tool.virtual_machine import get_virtual_machine_manager
-from toolbox.model.config.virtual_machine import VirtualMachine
 
 
-class AbstractVirtualMachineCommand(ABC):
+class CommandVirtualMachine(ABC):
 
     @staticmethod
     def get_virtual_machine(virtual_machine_name: str) -> VirtualMachine:
@@ -20,7 +20,7 @@ class AbstractVirtualMachineCommand(ABC):
         :return: VirtualMachine
         """
         if virtual_machine_name not in config.get('virtual_machine').keys():
-            logging.error('Unknown virtual_machine, valid ones are %s', ', '.join(config.get('virtual_machine').keys()))
+            logger.error('Unknown virtual_machine, valid ones are %s', ', '.join(config.get('virtual_machine').keys()))
             sys.exit(1)
 
         return config.get('virtual_machine').get(virtual_machine_name)
@@ -31,7 +31,7 @@ class AbstractVirtualMachineCommand(ABC):
         Start the virtual machine
         :param virtual_machine_name: the name of the virtual machine
         """
-        virtual_machine = AbstractVirtualMachineCommand.get_virtual_machine(virtual_machine_name)
+        virtual_machine = CommandVirtualMachine.get_virtual_machine(virtual_machine_name)
         manager = get_virtual_machine_manager(virtual_machine)
         manager.start()
 
@@ -44,7 +44,7 @@ class AbstractVirtualMachineCommand(ABC):
         Stop the virtual machine
         :param virtual_machine_name: the name of the virtual machine
         """
-        virtual_machine = AbstractVirtualMachineCommand.get_virtual_machine(virtual_machine_name)
+        virtual_machine = CommandVirtualMachine.get_virtual_machine(virtual_machine_name)
         manager = get_virtual_machine_manager(virtual_machine)
         manager.stop()
 
@@ -64,17 +64,4 @@ class AbstractVirtualMachineCommand(ABC):
         :param name: the name of the project
         :return: True if exists, False if not
         """
-        return os.path.isdir(AbstractVirtualMachineCommand.path(name))
-
-    @staticmethod
-    def detect_project_type():
-        """
-        Detect the type of the project
-        :return:
-        """
-        cwd = os.getcwd()
-        for type_name in config.get('project_type').keys():
-            project_type: ProjectType = config.get('project_type').get(type_name)
-            if project_type.get_folder() in cwd:
-                return project_type
-        return None
+        return os.path.isdir(CommandVirtualMachine.path(name))

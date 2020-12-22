@@ -1,31 +1,21 @@
-import logging
 import os
-import sys
 
 import click
-import click_log
 
-logger = logging.getLogger(__name__)
-click_log.basic_config(logger)
-
-plugin_folder = os.path.join(os.path.dirname(__file__), 'command')
+from toolbox.command.abstract.group_dynamic import GroupDynamic
 
 
-class MainCommands(click.Group):
+class MainCommands(GroupDynamic):
     """
     List of main commands
     """
 
-    def list_commands(self, ctx):
-        return ['create', 'start', 'stop', 'list']
+    def __init__(self, name=None, commands=None, **attrs):
+        super().__init__(name=name, commands=commands, **attrs)
+        self.params.append(click.Option(['--verbose', '-v'], default=False, is_flag=True, help='Add more details'))
 
-    def get_command(self, ctx, name):
-        ns = {}
-        fn = os.path.join(plugin_folder, name + '_command.py')
-        with open(fn) as f:
-            code = compile(f.read(), fn, 'exec')
-            eval(code, ns, ns)
-        return ns['command']
+    def get_path(self) -> str:
+        return os.path.join(os.path.dirname(__file__), 'command')
 
 
 main = MainCommands()

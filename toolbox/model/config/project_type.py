@@ -1,4 +1,4 @@
-import logging
+from toolbox.tool.logger import logger
 import os
 
 from mutagen_helper.manager import Manager
@@ -105,5 +105,5 @@ class ProjectType:
         :param command: execute the given command in the project folder
         :return:
         """
-        logging.info("Execution of %s command", command)
+        logger.info("Execution of %s command", command)
         os.system("{} {}".format(command, path))

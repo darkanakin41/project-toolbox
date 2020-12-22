@@ -1,4 +1,4 @@
-import logging
+from toolbox.tool.logger import logger
 import os
 import shutil
 import stat
@@ -57,7 +57,7 @@ class Template:
         :return:
         """
         template_directory = self.template_path()
-        logging.debug("[Template.py] Copy files from %s to %s", template_directory, target_folder)
+        logger.debug("[Template.py] Copy files from %s to %s", template_directory, target_folder)
         copy_tree(template_directory, target_folder)
 
     def _copy_git(self, target_folder):
@@ -69,14 +69,14 @@ class Template:
         template_directory = self.template_path()
 
         if os.path.isdir(template_directory):
-            logging.debug("[Template.py] Updating template from git")
+            logger.debug("[Template.py] Updating template from git")
             Git(template_directory).pull()
         else:
-            logging.debug("[Template.py] Cloning template from git")
+            logger.debug("[Template.py] Cloning template from git")
             Repo.clone_from(url=self.path, to_path=template_directory)
 
         self._copy_directory(target_folder)
 
-        logging.debug("[Template.py] Removal of .git folder coming from template")
+        logger.debug("[Template.py] Removal of .git folder coming from template")
         shutil.rmtree(os.path.join(target_folder, '.git'),
                       onerror=lambda func, path, exc_info: (os.chmod(path, stat.S_IWRITE), os.unlink(path)))
