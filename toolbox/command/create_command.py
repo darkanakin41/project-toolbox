@@ -5,7 +5,7 @@ import sys
 import webbrowser
 from configparser import NoSectionError
 
-from click import Argument, Option, Choice, Context
+import click
 from git import Repo, InvalidGitRepositoryError
 from mutagen_helper.manager import Manager
 
@@ -26,12 +26,12 @@ class CreateCommand(AbstractCommand, AbstractVirtualMachineCommand):
         super().__init__('start')
         self.help = 'Create a project'
         self.no_args_is_help = True
-        self.params.append(Argument(['project'], required=True))
-        self.params.append(Argument(['type'], required=True, type=Choice(project_type_names())))
-        self.params.append(Option(['--vcs'], default=False, type=Choice(vcs_names()), help='Stop the vm too'))
-        self.params.append(Option(['--template'], default=False, help='Template to use'))
+        self.params.append(click.Argument(['project'], required=True))
+        self.params.append(click.Argument(['type'], required=True, type=click.Choice(project_type_names())))
+        self.params.append(click.Option(['--vcs'], default=False, type=click.Choice(vcs_names()), help='Stop the vm too'))
+        self.params.append(click.Option(['--template'], default=False, help='Template to use'))
 
-    def invoke(self, ctx: Context):
+    def invoke(self, ctx: click.Context):
         type_name = ctx.params.get('type')
         name = ctx.params.get('project')
         vcs_type = ctx.params.get('vcs')

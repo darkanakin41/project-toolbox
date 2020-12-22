@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from click import Argument, Option, Context
+import click
 from mutagen_helper.manager import Manager
 
 from toolbox.command.abstract_command import AbstractCommand
@@ -17,10 +17,10 @@ class StartCommand(AbstractCommand, AbstractVirtualMachineCommand):
         super().__init__('start')
         self.help = 'Start a project'
         self.no_args_is_help = True
-        self.params.append(Argument(['project'], required=True, default=None))
-        self.params.append(Option(['--noexec'], default=False, is_flag=True, help='Don\'t run specified exec commands'))
+        self.params.append(click.Argument(['project'], required=True, default=None))
+        self.params.append(click.Option(['--noexec'], default=False, is_flag=True, help='Don\'t run specified exec commands'))
 
-    def invoke(self, ctx: Context):
+    def invoke(self, ctx: click.Context):
         name: str = ctx.params.get('project')
         noexec: bool = ctx.params.get('noexec')
         if not StartCommand.exists(name):

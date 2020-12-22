@@ -2,17 +2,17 @@ import logging
 import sys
 from abc import ABC, abstractmethod
 
-from click import Command, Context
+import click
 
 from toolbox.config import config
 
 
-class AbstractCommand(ABC, Command):
+class AbstractCommand(ABC, click.Command):
     """
     Abstract command
     """
 
-    def invoke(self, ctx: Context):
+    def invoke(self, ctx: click.Context):
         raise NotImplementedError()
 
     @staticmethod

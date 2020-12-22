@@ -1,8 +1,7 @@
 import logging
 import sys
 
-from click import Argument, Context
-from click import Option
+import click
 
 from mutagen_helper.manager import Manager
 
@@ -19,10 +18,10 @@ class StopCommand(AbstractCommand, AbstractVirtualMachineCommand):
         super().__init__('start')
         self.help = 'Stop a project'
         self.no_args_is_help = True
-        self.params.append(Argument(['project'], required=True, default=None))
-        self.params.append(Option(['--vm'], default=False, is_flag=True, help='Stop the vm too'))
+        self.params.append(click.Argument(['project'], required=True, default=None))
+        self.params.append(click.Option(['--vm'], default=False, is_flag=True, help='Stop the vm too'))
 
-    def invoke(self, ctx: Context):
+    def invoke(self, ctx: click.Context):
         name: str = ctx.params.get('name')
         virtual_machine: bool = ctx.params.get('vm')
         if not self.exists(name):
@@ -43,5 +42,6 @@ class StopCommand(AbstractCommand, AbstractVirtualMachineCommand):
         logging.debug("Project virtual machine is %s", project_type.virtual_machine)
         if project_type.virtual_machine and virtual_machine:
             self.stop_virtual_machine(project_type.virtual_machine)
+
 
 command = StopCommand()

@@ -2,7 +2,7 @@ import os
 import time
 from datetime import datetime
 
-from click import Context, Argument, Option, Choice
+import click
 from prettytable import PrettyTable
 
 from toolbox.command.abstract_command import AbstractCommand
@@ -17,13 +17,13 @@ class ListCommand(AbstractCommand):
     def __init__(self):
         super().__init__('list')
         self.help = 'List projects and status'
-        self.params.append(Argument(['project'], required=False, default=None))
-        self.params.append(Option(['--type'],
+        self.params.append(click.Argument(['project'], required=False, default=None))
+        self.params.append(click.Option(['--type'],
                                   required=False,
-                                  type=Choice(project_type_names()),
+                                  type=click.Choice(project_type_names()),
                                   help='Display only given type'))
-        self.params.append(Option(['--all'], default=False, is_flag=True, help='Display all projects'))
-        self.params.append(Option(['--watch'], default=False, is_flag=True, help='Watch mode'))
+        self.params.append(click.Option(['--all'], default=False, is_flag=True, help='Display all projects'))
+        self.params.append(click.Option(['--watch'], default=False, is_flag=True, help='Watch mode'))
 
     def _display(self, projects: list, all: bool):
         """
@@ -43,7 +43,7 @@ class ListCommand(AbstractCommand):
         os.system('cls')
         print(table)
 
-    def invoke(self, ctx: Context):
+    def invoke(self, ctx: click.Context):
         project: str = ctx.params.get('project')
         project_type: str = ctx.params.get('type')
         all: bool = ctx.params.get('all')
