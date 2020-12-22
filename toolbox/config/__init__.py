@@ -10,3 +10,12 @@ config = {
 for parser_name in parsers.keys():
     parser: AbstractParser = parsers[parser_name]
     config[parser_name] = parser.parsed
+
+
+def project_type_names():
+    return [t[1].name for t in config.get('project_type').items()]
+
+
+def vcs_names():
+    return [v[1].name for v in config.get('vcs').items()]
+

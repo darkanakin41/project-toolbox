@@ -5,9 +5,10 @@ import click
 
 from toolbox.__version__ import __version__
 from toolbox.command.create_command import CreateCommand
+from toolbox.command.list_command import ListCommand
 from toolbox.command.start_command import StartCommand
 from toolbox.command.stop_command import StopCommand
-from toolbox.command.list_command import ListCommand
+from toolbox.config import project_type_names, vcs_names
 
 
 class SpecialHelpOrder(click.Group):
@@ -69,14 +70,14 @@ def main(verbose, silent):
 
 @main.command(help='Create a new project', help_priority=1)
 @click.argument('name', required=True)
-@click.argument('project_type', required=True)
-@click.option('--vcs', required=False)
+@click.argument('project_type', required=True, type=click.Choice(project_type_names()))
+@click.option('--vcs', required=False, type=click.Choice(vcs_names()))
 @click.option('--template', required=False)
 def create(name: str, project_type: str, vcs: str = None, template: str = None):
     """
     Create command
     :param name: The name of the project
-    :param type: The type of the project
+    :param project_type: The type of the project
     :param vcs: The VCS to use
     :param template: The template to clone
     :return:
@@ -92,6 +93,7 @@ def start(name: str, noexec: bool):
     """
     Start command
     :param name: the name of the project
+    :param noexec: disable exec
     :return:
     """
     command = StartCommand()
@@ -114,7 +116,7 @@ def stop(name: str, vm: bool):
 
 @main.command(help='List projects and status', help_priority=1)
 @click.argument('project', required=False, default=None)
-@click.option('--type', required=False)
+@click.option('--type', required=False, type=click.Choice(project_type_names()))
 @click.option('--all', required=False, default=False, is_flag=True)
 @click.option('--watch', required=False, default=False, is_flag=True)
 def list(all: bool, watch: bool, project: str = None, type: str = None):
@@ -122,6 +124,8 @@ def list(all: bool, watch: bool, project: str = None, type: str = None):
     LIst command
     :param project: the name of the project
     :param type: the type of project
+    :param watch: enable watch mode
+    :param all: display all projects
     :return:
     """
     command = ListCommand()
