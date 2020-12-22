@@ -115,9 +115,9 @@ def stop(name: str, vm: bool):
 @main.command(help='List projects and status', help_priority=1)
 @click.argument('project', required=False, default=None)
 @click.option('--type', required=False)
-@click.option('--active', required=False, default=False, is_flag=True)
+@click.option('--all', required=False, default=False, is_flag=True)
 @click.option('--watch', required=False, default=False, is_flag=True)
-def list(active: bool, watch: bool, project: str = None, type: str = None):
+def list(all: bool, watch: bool, project: str = None, type: str = None):
     """
     LIst command
     :param project: the name of the project
@@ -125,7 +125,7 @@ def list(active: bool, watch: bool, project: str = None, type: str = None):
     :return:
     """
     command = ListCommand()
-    command.exec(project=project, type=type, only_active=active, watch=watch)
+    command.exec(project=project, type=type, all=all, watch=watch)
 
 
 if __name__ == '__main__':

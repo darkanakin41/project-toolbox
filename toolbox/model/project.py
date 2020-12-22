@@ -55,11 +55,10 @@ class Project:
         if not self.type.is_mutagened():
             return ''
 
-        mutagen_helper = Manager()
-        entries = mutagen_helper.list(path=self.type.get_folder(), project=self.name)
-
-        if len(entries) != 1:
+        entry = self.type.get_mutagen_entry(project_name=self.name)
+        
+        if entry is None:
             return ''
-        if entries[0].get('Last error') is not None:
-            return entries[0].get('Status') + ', Last Error: ' + entries[0].get('Last error')
-        return entries[0].get('Status')
+        if entry.get('Last error') is not None:
+            return entry.get('Status') + ', Last Error: ' + entry.get('Last error')
+        return entry.get('Status')

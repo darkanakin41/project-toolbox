@@ -16,7 +16,7 @@ class ListCommand(AbstractCommand):
     def exec(self, **kwargs):
         project: str = kwargs.get('project')
         project_type: str = kwargs.get('type')
-        only_active: bool = kwargs.get('only_active')
+        all: bool = kwargs.get('all')
         watch: bool = kwargs.get('watch')
 
         ListCommand.validate_project_type(project_type)
@@ -35,16 +35,18 @@ class ListCommand(AbstractCommand):
 
         if watch:
             while True:
-                self._display(projects=all_projects, only_active=only_active)
+                for t in projects_type:
+                    t.refresh_mutagen_entries()
+                self._display(projects=all_projects, all=all)
                 time.sleep(10)
         else:
-            self._display(projects=all_projects, only_active=only_active)
+            self._display(projects=all_projects, all=all)
 
-    def _display(self, projects: list, only_active: bool):
+    def _display(self, projects: list, all: bool):
         """
         Display projects
         :param projects: the list of projects
-        :param only_active: filter only on active projects
+        :param all: filter only on active projects
         :return: void
         """
         table = PrettyTable(['Project', 'Type', 'Mutagen Active'])
@@ -52,7 +54,7 @@ class ListCommand(AbstractCommand):
         table.align["Mutagen Active"] = "l"
         for p in projects:
             status = p.get_mutagen_status()
-            if not only_active or len(status) > 0:
+            if all or len(status) > 0:
                 table.add_row([p.name, p.type.name, p.get_mutagen_status()])
         table.title = 'Project Toolbox - ' + datetime.today().ctime()
         os.system('cls')
